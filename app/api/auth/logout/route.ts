@@ -1,0 +1,11 @@
+import { jsonError, jsonOk } from "../../../lib/api/http";
+import { logout } from "../../../lib/auth";
+
+export async function POST() {
+  try {
+    await logout();
+    return jsonOk({ ok: true });
+  } catch (error) {
+    return jsonError(error);
+  }
+}

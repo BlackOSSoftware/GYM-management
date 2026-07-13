@@ -1,11 +1,30 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Dumbbell } from "lucide-react";
-import { loginAction } from "../actions";
+import { loginApi } from "../lib/api/client";
 
 export default function LoginPage() {
-  const [state, action, pending] = useActionState(loginAction, null);
+  const router = useRouter();
+  const [error, setError] = useState("");
+  const [pending, setPending] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setPending(true);
+    setError("");
+    const form = new FormData(e.currentTarget);
+    try {
+      await loginApi(String(form.get("username")), String(form.get("password")));
+      router.push("/");
+      router.refresh();
+    } catch (err: any) {
+      setError(err?.message || "Login failed");
+    } finally {
+      setPending(false);
+    }
+  };
 
   return (
     <main className="login-page">
@@ -15,7 +34,7 @@ export default function LoginPage() {
         </div>
         <h1>Gym Management</h1>
         <p>Sign in to manage members, payments, plans and operations.</p>
-        <form action={action} className="login-form">
+        <form onSubmit={handleSubmit} className="login-form">
           <label>
             Username
             <input name="username" defaultValue="admin" autoComplete="username" required />
@@ -24,7 +43,7 @@ export default function LoginPage() {
             Password
             <input name="password" type="password" defaultValue="admin" autoComplete="current-password" required />
           </label>
-          {state?.message ? <div className="form-error">{state.message}</div> : null}
+          {error ? <div className="form-error">{error}</div> : null}
           <button className="primary-btn" disabled={pending}>{pending ? "Signing in..." : "Login"}</button>
         </form>
         <span className="hint">Default login: admin / admin</span>
