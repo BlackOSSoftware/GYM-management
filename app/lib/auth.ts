@@ -51,6 +51,28 @@ export async function getSession(): Promise<Session | null> {
   }
 }
 
+export async function changePassword(oldPassword: string, newPassword: string) {
+  const session = await getSession();
+  if (!session) return { ok: false as const, message: "Unauthorized" };
+
+  const oldPw = String(oldPassword || "");
+  const newPw = String(newPassword || "");
+  if (!oldPw || !newPw) return { ok: false as const, message: "Old and new password are required" };
+  if (newPw.length < 4) return { ok: false as const, message: "New password must be at least 4 characters" };
+
+  const { ObjectId } = await import("mongodb");
+  const db = await getDb();
+  const user = await db.collection("staff").findOne({ _id: new ObjectId(session.id) });
+  if (!user) return { ok: false as const, message: "User not found" };
+
+  const match = await bcrypt.compare(oldPw, user.passwordHash || "");
+  if (!match) return { ok: false as const, message: "Current password is incorrect" };
+
+  const passwordHash = await bcrypt.hash(newPw, 10);
+  await db.collection("staff").updateOne({ _id: user._id }, { $set: { passwordHash, updatedAt: new Date().toISOString() } });
+  return { ok: true as const };
+}
+
 export async function requireSession() {
   const session = await getSession();
   if (!session) redirect("/login");

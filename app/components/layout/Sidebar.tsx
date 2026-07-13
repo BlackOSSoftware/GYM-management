@@ -2,6 +2,7 @@
 
 import { Dumbbell } from "lucide-react";
 import { nav, type ModuleKey } from "../../lib/config/nav";
+import { cn } from "../../lib/utils/cn";
 import ThemeToggle from "./ThemeToggle";
 
 type Props = {
@@ -30,7 +31,7 @@ export default function Sidebar({ active, onNavigate, onClose }: Props) {
           <button
             key={item.key}
             type="button"
-            className={active === item.key ? "active" : ""}
+            className={cn(active === item.key && "active")}
             onClick={() => onNavigate(item.key)}
           >
             <span className="nav-icon"><item.icon size={18} /></span>

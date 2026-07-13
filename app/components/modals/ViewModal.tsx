@@ -2,32 +2,124 @@
 
 import { moduleTitles, type ModuleKey } from "../../lib/config/nav";
 import type { AnyDoc, AppData } from "../../lib/types";
-import { currency, formatValue, label } from "../../lib/utils/format";
-import Panel from "../ui/Panel";
+import { formatValue, label } from "../../lib/utils/format";
+import MemberProfileView from "./MemberProfileView";
+import MembershipProfileView from "./MembershipProfileView";
+import TrainerProfileView from "./TrainerProfileView";
+import StaffProfileView from "./StaffProfileView";
+import PaymentProfileView from "./PaymentProfileView";
+import WorkoutProfileView from "./WorkoutProfileView";
+import DietProfileView from "./DietProfileView";
+import EquipmentProfileView from "./EquipmentProfileView";
 
 type Props = {
   viewing: { collection: string; record: AnyDoc };
   data: AppData;
   onClose: () => void;
   onEdit: () => void;
+  onDuplicate?: () => void;
+  onDelete?: () => void;
+  onDeactivate?: () => void;
 };
 
-function DetailBlock({ row, keys }: { row: AnyDoc; keys: string[] }) {
-  return (
-    <div className="detail-block">
-      {keys.map((key) => (
-        <p key={key}><small>{label(key)}</small><span>{formatValue(row[key], key)}</span></p>
-      ))}
-    </div>
-  );
-}
-
-export default function ViewModal({ viewing, data, onClose, onEdit }: Props) {
+export default function ViewModal({
+  viewing,
+  data,
+  onClose,
+  onEdit,
+  onDuplicate,
+  onDelete,
+  onDeactivate
+}: Props) {
   const { collection, record } = viewing;
-  const memberPayments = collection === "members" ? data.payments.filter((p) => p.memberName === record.name || p.memberId === record.memberId) : [];
-  const trainer = collection === "members" ? data.trainers.find((t) => t.name === record.assignedTrainer) : null;
-  const workout = collection === "members" ? data.workouts.find((w) => w.name === record.workoutPlan) : null;
-  const diet = collection === "members" ? data.diets.find((d) => d.name === record.dietPlan) : null;
+
+  if (collection === "members") {
+    return <MemberProfileView record={record} data={data} onClose={onClose} onEdit={onEdit} />;
+  }
+
+  if (collection === "memberships") {
+    return (
+      <MembershipProfileView
+        record={record}
+        members={data.members}
+        onClose={onClose}
+        onEdit={onEdit}
+        onDuplicate={() => onDuplicate?.()}
+        onDelete={() => onDelete?.()}
+      />
+    );
+  }
+
+  if (collection === "trainers") {
+    return (
+      <TrainerProfileView
+        record={record}
+        members={data.members}
+        onClose={onClose}
+        onEdit={onEdit}
+        onDelete={() => onDelete?.()}
+        onDeactivate={() => onDeactivate?.()}
+      />
+    );
+  }
+
+  if (collection === "staff") {
+    return (
+      <StaffProfileView
+        record={record}
+        onClose={onClose}
+        onEdit={onEdit}
+        onDelete={() => onDelete?.()}
+        onDeactivate={() => onDeactivate?.()}
+      />
+    );
+  }
+
+  if (collection === "payments") {
+    return (
+      <PaymentProfileView
+        record={record}
+        data={data}
+        onClose={onClose}
+        onEdit={onEdit}
+      />
+    );
+  }
+
+  if (collection === "workouts") {
+    return (
+      <WorkoutProfileView
+        record={record}
+        data={data}
+        onClose={onClose}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+    );
+  }
+
+  if (collection === "diets") {
+    return (
+      <DietProfileView
+        record={record}
+        data={data}
+        onClose={onClose}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+    );
+  }
+
+  if (collection === "equipment") {
+    return (
+      <EquipmentProfileView
+        record={record}
+        onClose={onClose}
+        onEdit={onEdit}
+        onDelete={onDelete}
+      />
+    );
+  }
 
   return (
     <div className="modal-backdrop">
@@ -44,26 +136,12 @@ export default function ViewModal({ viewing, data, onClose, onEdit }: Props) {
           </div>
         </div>
         <div className="detail-grid">
-          {Object.entries(record).filter(([key]) => !["_id", "passwordHash"].includes(key)).map(([key, value]) => (
-            <div key={key}><small>{label(key)}</small><span>{formatValue(value, key)}</span></div>
-          ))}
+          {Object.entries(record)
+            .filter(([key]) => !["_id", "passwordHash", "_convertFromVisitorId"].includes(key))
+            .map(([key, value]) => (
+              <div key={key}><small>{label(key)}</small><span>{formatValue(value, key)}</span></div>
+            ))}
         </div>
-        {collection === "members" ? (
-          <div className="linked-grid">
-            <Panel title="Assigned Trainer">{trainer ? <DetailBlock row={trainer} keys={["name", "mobile", "specialization", "experience"]} /> : <p>No trainer assigned</p>}</Panel>
-            <Panel title="Workout Plan">{workout ? <DetailBlock row={workout} keys={["name", "category", "exerciseName", "duration"]} /> : <p>No workout assigned</p>}</Panel>
-            <Panel title="Diet Plan">{diet ? <DetailBlock row={diet} keys={["name", "category", "breakfast", "lunch", "dinner"]} /> : <p>No diet assigned</p>}</Panel>
-            <Panel title="Payment History">
-              {memberPayments.length ? (
-                <div className="compact-list">
-                  {memberPayments.map((p) => (
-                    <div key={p._id}><b>{p.invoiceNo}</b><span>{currency(Number(p.amount || 0))}</span><small>{p.paymentDate}</small></div>
-                  ))}
-                </div>
-              ) : <p>No payment recorded</p>}
-            </Panel>
-          </div>
-        ) : null}
         <div className="modal-actions">
           <button type="button" onClick={onClose}>Close</button>
           <button className="primary-btn" type="button" onClick={onEdit}>Edit</button>

@@ -51,13 +51,13 @@ export const moduleTitles: Record<ModuleKey, string> = {
   visitors: "Visitor Management",
   memberships: "Membership Management",
   trainers: "Trainer Management",
-  staff: "Staff & Access Control",
+  staff: "Staff Management",
   payments: "Payment Management",
   workouts: "Workout Management",
   diets: "Diet Management",
   equipment: "Equipment Management",
   reports: "Reports & Analytics",
-  settings: "Security & Activity Logs"
+  settings: "Settings"
 };
 
 export const quickActions = [

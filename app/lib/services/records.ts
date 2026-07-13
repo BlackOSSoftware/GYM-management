@@ -20,7 +20,7 @@ const requiredFields: Record<string, string[]> = {
   visitors: ["name", "mobile", "visitDate", "status"],
   memberships: ["name", "durationType", "durationValue", "trainerIncluded", "price", "status"],
   trainers: ["name", "mobile", "specialization", "status"],
-  staff: ["name", "username", "role", "status"],
+  staff: ["name", "designation", "status"],
   payments: ["memberName", "amount", "method", "type", "status", "paymentDate"],
   workouts: ["name", "category", "exerciseName", "status"],
   diets: ["name", "category", "status"],
@@ -40,9 +40,11 @@ function normalizePayload(input: Record<string, any>) {
   return out;
 }
 
-function assertValid(collection: string, payload: Record<string, any>, isNew: boolean) {
+function assertValid(collection: string, payload: Record<string, any>, _isNew: boolean) {
   const missing = (requiredFields[collection] || []).filter((key) => payload[key] === undefined || payload[key] === "");
-  if (collection === "staff" && isNew && !payload.password) missing.push("password");
+  if (collection === "staff" && payload.designation === "Other" && !payload.customDesignation) {
+    missing.push("customDesignation");
+  }
   if (missing.length) throw new Error(`Required fields missing: ${missing.join(", ")}`);
 
   if (payload.mobile && !/^[0-9+\-\s]{8,15}$/.test(payload.mobile)) throw new Error("Mobile number is not valid");

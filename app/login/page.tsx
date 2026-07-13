@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Dumbbell } from "lucide-react";
+import Button from "../components/ui/Button";
 import { loginApi } from "../lib/api/client";
 
 export default function LoginPage() {
@@ -44,7 +45,9 @@ export default function LoginPage() {
             <input name="password" type="password" defaultValue="admin" autoComplete="current-password" required />
           </label>
           {error ? <div className="form-error">{error}</div> : null}
-          <button className="primary-btn" disabled={pending}>{pending ? "Signing in..." : "Login"}</button>
+          <Button type="submit" variant="primary" className="w-full" disabled={pending}>
+            {pending ? "Signing in..." : "Login"}
+          </Button>
         </form>
         <span className="hint">Default login: admin / admin</span>
       </section>

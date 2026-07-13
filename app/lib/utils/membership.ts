@@ -35,3 +35,7 @@ export function normalizeMembershipPlan(plan: AnyDoc | Record<string, any>) {
 export function previewMemberId(memberCount: number) {
   return `M-${String(1001 + memberCount).padStart(4, "0")}`;
 }
+
+export function previewVisitorId(visitorCount: number) {
+  return `V-${String(1001 + visitorCount).padStart(4, "0")}`;
+}

@@ -46,6 +46,7 @@ export function memberFromVisitor(visitor: AnyDoc) {
     joiningDate: today,
     startDate: today,
     status: "Active",
-    discount: 0
+    discount: 0,
+    _convertFromVisitorId: visitor._id ? String(visitor._id) : ""
   };
 }

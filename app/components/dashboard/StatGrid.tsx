@@ -1,43 +1,22 @@
 "use client";
 
 import type { ModuleKey } from "../../lib/config/nav";
-
-type StatCard = {
-  label: string;
-  value: string | number;
-  sub: string;
-  icon: any;
-  color: string;
-  target: ModuleKey;
-  filter: string;
-};
+import StatCard, { type StatCardData } from "./StatCard";
 
 type Props = {
-  cards: StatCard[];
+  cards: StatCardData[];
   onCardClick: (target: ModuleKey, filter: string) => void;
 };
 
 export default function StatGrid({ cards, onCardClick }: Props) {
   return (
-    <section className="stat-grid stat-grid--dashboard">
+    <section className="grid grid-cols-2 gap-2 min-[768px]:grid-cols-2 min-[1024px]:grid-cols-4 min-[1440px]:gap-2.5">
       {cards.map((card) => (
-        <button
+        <StatCard
           key={card.label}
-          type="button"
-          className={`stat-card stat-button stat-card--${card.color}`}
+          {...card}
           onClick={() => onCardClick(card.target, card.filter)}
-        >
-          <div className="stat-card-header">
-            <span className={`stat-icon stat-icon--${card.color}`}>
-              <card.icon size={20} strokeWidth={2.2} />
-            </span>
-            <span className="stat-card-tag">{card.sub}</span>
-          </div>
-          <div className="stat-card-body">
-            <b className="stat-value">{card.value}</b>
-            <p className="stat-label">{card.label}</p>
-          </div>
-        </button>
+        />
       ))}
     </section>
   );

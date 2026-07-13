@@ -3,10 +3,9 @@
 import { Bell, LogOut, Mail, Menu, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { logoutApi } from "../../lib/api/client";
-import { moduleTitles, type ModuleKey } from "../../lib/config/nav";
+import { useGymName } from "../../hooks/useGymName";
 
 type Props = {
-  active: ModuleKey;
   query: string;
   userName: string;
   userRole: string;
@@ -14,8 +13,9 @@ type Props = {
   onOpenSidebar: () => void;
 };
 
-export default function Topbar({ active, query, userName, userRole, onQueryChange, onOpenSidebar }: Props) {
+export default function Topbar({ query, userName, userRole, onQueryChange, onOpenSidebar }: Props) {
   const router = useRouter();
+  const { gymName } = useGymName();
 
   const handleLogout = async () => {
     await logoutApi();
@@ -30,7 +30,7 @@ export default function Topbar({ active, query, userName, userRole, onQueryChang
           <Menu size={22} />
         </button>
         <div className="title-text">
-          <h1>{moduleTitles[active]}</h1>
+          <h1>{gymName}</h1>
           <span className="welcome-text">Welcome back, {userName}</span>
         </div>
       </div>

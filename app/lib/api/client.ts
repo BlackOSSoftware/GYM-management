@@ -13,6 +13,13 @@ export async function fetchNextMemberId(): Promise<string> {
   return data.memberId;
 }
 
+export async function fetchNextVisitorId(): Promise<string> {
+  const response = await fetch("/api/visitors/next-id", { cache: "no-store" });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Failed to get visitor ID");
+  return data.visitorId;
+}
+
 export async function fetchAppData(): Promise<AppData> {
   const response = await fetch("/api/data", { cache: "no-store" });
   return parseJson<AppData>(response);
@@ -51,4 +58,15 @@ export async function loginApi(username: string, password: string) {
 export async function logoutApi() {
   const response = await fetch("/api/auth/logout", { method: "POST" });
   return parseJson<{ ok: boolean }>(response);
+}
+
+export async function changePasswordApi(oldPassword: string, newPassword: string) {
+  const response = await fetch("/api/auth/change-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ oldPassword, newPassword })
+  });
+  const data = await response.json();
+  if (!response.ok || !data.ok) throw new Error(data.message || data.error || "Password change failed");
+  return data as { ok: boolean };
 }
