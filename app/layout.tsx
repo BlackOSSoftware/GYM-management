@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import NativeShell from "./components/capacitor/NativeShell";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -11,7 +12,11 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
-  viewportFit: "cover"
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f4f7fb" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f172a" }
+  ]
 };
 
 /** Runs before paint so saved theme applies without a flash. */
@@ -22,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body>
         <Script id="gym-theme-init" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP }} />
+        <NativeShell />
         {children}
       </body>
     </html>

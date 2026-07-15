@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { syncNativeStatusBar } from "../lib/capacitor/native";
 
 export type ThemeMode = "light" | "dark";
 
@@ -15,6 +16,7 @@ function readStoredTheme(): ThemeMode {
 
 function applyTheme(mode: ThemeMode) {
   document.documentElement.setAttribute("data-theme", mode);
+  void syncNativeStatusBar(mode);
   try {
     localStorage.setItem("gym-theme", mode);
   } catch {
@@ -28,7 +30,7 @@ export function useTheme() {
   useEffect(() => {
     const saved = readStoredTheme();
     setTheme(saved);
-    document.documentElement.setAttribute("data-theme", saved);
+    applyTheme(saved);
   }, []);
 
   const toggleTheme = useCallback(() => {

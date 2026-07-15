@@ -5,11 +5,14 @@ import { useRouter } from "next/navigation";
 import { Dumbbell } from "lucide-react";
 import Button from "../components/ui/Button";
 import { loginApi } from "../lib/api/client";
+import { useCapacitorBack } from "../hooks/useCapacitorBack";
 
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
+
+  useCapacitorBack({ isRoot: true });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

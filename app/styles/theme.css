@@ -224,7 +224,7 @@
   grid-template-rows: auto;
   align-items: center;
   gap: 14px;
-  padding: 12px clamp(16px, 2.5vw, 28px);
+  padding: calc(12px + env(safe-area-inset-top, 0px)) clamp(16px, 2.5vw, 28px) 12px;
   background: var(--panel);
   border-bottom: 1px solid var(--line);
   box-shadow: 0 1px 0 var(--shadow);

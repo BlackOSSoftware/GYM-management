@@ -97,7 +97,12 @@ strong,
   overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: #ffffff30 transparent;
+  padding-top: calc(24px + env(safe-area-inset-top, 0px));
   padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+}
+
+.loading-screen {
+  padding-top: env(safe-area-inset-top, 0px);
 }
 
 .sidebar::-webkit-scrollbar,
@@ -380,7 +385,7 @@ td {
   min-height: 100dvh;
   height: 100%;
   overflow-y: auto;
-  padding: 16px 12px;
+  padding: calc(16px + env(safe-area-inset-top, 0px)) 12px calc(16px + env(safe-area-inset-bottom, 0px));
 }
 
 .login-panel {

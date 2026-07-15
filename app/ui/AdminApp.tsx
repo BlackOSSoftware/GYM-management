@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { nav, type ModuleKey } from "../lib/config/nav";
 import type { AnyDoc, AppData } from "../lib/types";
 import { deleteRecordApi, saveRecordApi } from "../lib/api/client";
 import { useAppData } from "../hooks/useAppData";
+import { useCapacitorBack } from "../hooks/useCapacitorBack";
 import { buildStats } from "../lib/utils/stats";
 import { memberFromVisitor, searchAll } from "../lib/utils/search";
 import Sidebar from "../components/layout/Sidebar";
@@ -56,30 +57,61 @@ export default function AdminApp({ initialData }: { initialData?: AppData }) {
     setQuery(q);
   }, [searchParams]);
 
-  const updateUrl = (key: ModuleKey, filter = "") => {
+  const updateUrl = (key: ModuleKey, filter = "", historyMode: "push" | "replace" = "push") => {
     const params = new URLSearchParams();
     if (key !== "dashboard") params.set("page", key);
     if (filter) params.set("q", filter);
     const next = params.toString() ? `/?${params.toString()}` : "/";
-    router.replace(next, { scroll: false });
+    if (historyMode === "replace") {
+      router.replace(next, { scroll: false });
+    } else {
+      router.push(next, { scroll: false });
+    }
   };
 
-  const navigate = (key: ModuleKey, filter = "") => {
+  const navigate = useCallback((key: ModuleKey, filter = "") => {
     setActive(key);
     setQuery(filter);
     setSidebarOpen(false);
-    updateUrl(key, filter);
-  };
+    updateUrl(key, filter, "push");
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- router stable enough; updateUrl uses latest
+  }, [router]);
 
   const handleQueryChange = (value: string) => {
     setQuery(value);
-    updateUrl(active, value);
+    updateUrl(active, value, "replace");
   };
 
   useEffect(() => {
     document.body.classList.toggle("sidebar-locked", sidebarOpen);
     return () => document.body.classList.remove("sidebar-locked");
   }, [sidebarOpen]);
+
+  const closeOverlay = useCallback(() => {
+    if (viewing) {
+      setViewing(null);
+      return true;
+    }
+    if (editing) {
+      setEditing(null);
+      return true;
+    }
+    if (sidebarOpen) {
+      setSidebarOpen(false);
+      return true;
+    }
+    return false;
+  }, [viewing, editing, sidebarOpen]);
+
+  const goDashboard = useCallback(() => {
+    navigate("dashboard");
+  }, [navigate]);
+
+  useCapacitorBack({
+    onCloseOverlay: closeOverlay,
+    isRoot: active === "dashboard",
+    onGoBack: goDashboard
+  });
 
   if (loading && !data) {
     return <div className="loading-screen">Loading dashboard...</div>;

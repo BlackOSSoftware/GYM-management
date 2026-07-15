@@ -2,3 +2,15 @@ node_modules/
 .next/
 .env*.local
 
+# Capacitor / Android release secrets
+android/key.properties
+android/app/gym-release.jks
+android/app/build/
+android/.gradle/
+android/build/
+*.apk
+*.aab
+*.jks
+*.keystore
+!www/
+
