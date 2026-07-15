@@ -21,15 +21,20 @@ const config: CapacitorConfig = {
   },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 1200,
+      launchShowDuration: 1800,
       launchAutoHide: true,
+      launchFadeOutDuration: 300,
       backgroundColor: "#0f172a",
-      showSpinner: false
+      androidSplashResourceName: "splash",
+      androidScaleType: "CENTER",
+      showSpinner: false,
+      splashFullScreen: false,
+      splashImmersive: false
     },
     StatusBar: {
-      // Light = dark icons for light theme (default app theme)
-      style: "LIGHT",
-      backgroundColor: "#f4f7fb"
+      overlaysWebView: false,
+      style: "DARK",
+      backgroundColor: "#161b22"
     }
   }
 };

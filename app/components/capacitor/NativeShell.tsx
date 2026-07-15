@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
+import { Capacitor } from "@capacitor/core";
+import { SplashScreen } from "@capacitor/splash-screen";
 import { syncNativeStatusBar } from "../../lib/capacitor/native";
 
 function themeFromDom(): "light" | "dark" {
@@ -10,7 +12,16 @@ function themeFromDom(): "light" | "dark" {
 /** Keeps Capacitor StatusBar in sync with data-theme (incl. login / bootstrap). */
 export default function NativeShell() {
   useEffect(() => {
-    void syncNativeStatusBar(themeFromDom());
+    if (!Capacitor.isNativePlatform()) return;
+
+    void (async () => {
+      await syncNativeStatusBar(themeFromDom());
+      try {
+        await SplashScreen.hide({ fadeOutDuration: 250 });
+      } catch {
+        /* already hidden */
+      }
+    })();
 
     const observer = new MutationObserver(() => {
       void syncNativeStatusBar(themeFromDom());
