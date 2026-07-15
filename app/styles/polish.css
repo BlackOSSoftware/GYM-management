@@ -35,6 +35,40 @@ strong,
   white-space: nowrap;
 }
 
+/* Mobile/desktop shell: lock to dynamic viewport (100vh clips under browser chrome) */
+.app-shell,
+.sidebar,
+.main {
+  height: 100dvh;
+  max-height: 100dvh;
+  min-height: 0;
+}
+
+.main {
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* Grow with page content so .main can scroll all the way to the bottom */
+.main > .content,
+.content {
+  flex: 0 0 auto !important;
+  height: auto !important;
+  min-height: min-content;
+  max-height: none !important;
+  overflow: visible !important;
+  padding-bottom: calc(34px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (max-width: 720px) {
+  .main > .content,
+  .content {
+    padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 @media (min-width: 981px) {
   .sidebar nav {
     overflow-y: auto;
@@ -59,24 +93,37 @@ strong,
 }
 
 .sidebar {
-  overflow-y: auto;
+  overflow: hidden;
   overflow-x: hidden;
   scrollbar-width: thin;
   scrollbar-color: #ffffff30 transparent;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
 }
 
-.sidebar::-webkit-scrollbar {
+.sidebar::-webkit-scrollbar,
+.sidebar nav::-webkit-scrollbar {
   width: 6px;
 }
 
-.sidebar::-webkit-scrollbar-thumb {
+.sidebar::-webkit-scrollbar-thumb,
+.sidebar nav::-webkit-scrollbar-thumb {
   background: #ffffff30;
   border-radius: 999px;
 }
 
+/* Nav is the scroll region so all menu items stay reachable */
 .sidebar nav {
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+}
+
+.sidebar-footer {
+  flex-shrink: 0;
 }
 
 .sidebar-top {
@@ -363,14 +410,7 @@ td {
   min-width: 120px;
 }
 
-/* Sidebar nav scroll on short screens */
 @media (max-height: 700px) and (max-width: 980px) {
-  .sidebar nav {
-    max-height: calc(100vh - 320px);
-    overflow-y: auto;
-    padding-right: 4px;
-  }
-
   .health-card {
     min-height: 150px;
     padding: 16px;
@@ -395,6 +435,14 @@ td {
     top: 0;
     bottom: 0;
     left: 0;
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
+
+  .sidebar-top,
+  .sidebar-label {
+    flex-shrink: 0;
   }
 
   .sidebar-top {
@@ -412,6 +460,13 @@ td {
 
   .logo small {
     font-size: 14px;
+  }
+
+  .sidebar nav {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .sidebar nav button {

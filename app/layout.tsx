@@ -10,7 +10,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 5
+  maximumScale: 5,
+  viewportFit: "cover"
 };
 
 /** Runs before paint so saved theme applies without a flash. */
